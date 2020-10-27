@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	<mapper namespace="com.baobab.m.dao.PokeMapper">
+		<insert id="getPoke" parameterType="com.baobab.m.vo.PokeVO">
+			insert into poke (email, cp_name, cp_address, score, rev_num, poke_date, div_code, cp_seq) values (#{email}, #{cp_name}, #{cp_address}, #{score}, #{rev_num}, sysdate(), #{div_code}, #{cp_seq})
+		</insert>
+		<delete id="delPoke" parameterType="com.baobab.m.vo.PokeVO">
+			delete from poke where email = #{email} and cp_seq = #{cp_seq}
+		</delete>
+		<select id="showPoke" parameterType="string" resultType="com.baobab.m.vo.PokeVO">
+		 	select * from poke where email = #{email} order by poke_date desc
+		</select>
+		<select id="pokeConfirm" parameterType="com.baobab.m.vo.PokeVO" resultType="int">
+			select count(*) from poke where email = #{email} and cp_name = #{cp_name} and div_code = #{div_code} and cp_seq = #{cp_seq}
+		</select>
+		<select id="showMetheFan" parameterType="string" resultType="com.baobab.m.vo.PokeVO">
+			select * from poke where cp_name = (select CP_name from cp_user where email = #{email})
+		</select>
+		
+		<select id="pokeCpInfo" parameterType="com.baobab.m.vo.PokeSearchVO" resultType="com.baobab.m.vo.CPInfoVO">
+			<![CDATA[select *,(6371*acos(cos(radians(#{latitude}))*cos(radians(latitude))*cos(radians(longitude)-radians(#{longitude}))+sin(radians(#{latitude}))*sin(radians(latitude)))) as distance, (select img_url from cp_img where cp_seq = cp_info.seq_num order by seq_num limit 1) as img_url, (select updateFlag from cp_img where cp_seq = cp_info.seq_num order by seq_num limit 1) as imgFlag from cp_info where seq_num = #{cpSeq}]]>
+		</select>
+	</mapper>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baobab.m.dao.MainListMapper">
+	<select id="selectTitle" resultType="com.baobab.m.vo.MainCpListTitleVO">
+		select * from mainListTitle
+	</select>
+	<select id="selectOneTitle" parameterType="string" resultType="string">
+		select mainText from mainListTitle where titleDiv = #{div}
+	</select>
+	<update id="updateTitle" parameterType="com.baobab.m.vo.MainCpListTitleVO">
+		update mainListTitle set writer = #{writer}, mainText = #{mainText}, subText = #{subText}, titleStatus = #{titleStatus}, writeDate = sysdate() where titleDiv = #{titleDiv}
+	</update>
+	
+	<select id="selectMenus" parameterType="int" resultType="com.baobab.m.vo.EventCpMenuVO" >
+		select m.* from event_menu_cp as m join event_option_cp as o on m.optionSerial = o.optionSerial join event_cp as e on o.eventSerial = e.eventSerial where e.cpSeq = #{cpSeq}
+	</select>
+	<select id="selectOneMenu" parameterType="int" resultType="com.baobab.m.vo.EventCpMenuVO">
+		select * from event_menu_cp where seqNum = #{seqNum}
+	</select>
+	<select id="ifNullRandomMenu" parameterType="int" resultType="com.baobab.m.vo.EventCpMenuVO">
+		select * from event_menu_cp where optionSerial = (select optionSerial from event_option_cp where eventSerial = (select eventSerial from event_cp where cpSeq = #{cpSeq} limit 1) limit 1) limit 1
+	</select>
+	<select id="selectImgs" parameterType="int" resultType="com.baobab.m.vo.CPmainImgVO">
+		select * from cp_img where cp_seq = #{cpSeq}
+	</select>
+	
+	<insert id="insertMenus" parameterType="com.baobab.m.vo.MainCpListVO">
+		insert into mainCpList (cpSeq, cpName, menuSeq, imgUrl, listDiv, selectDate) values (#{cpSeq}, (select CP_name from cp_info where seq_num = #{cpSeq}), #{menuSeq}, #{imgUrl}, #{listDiv}, sysdate())
+	</insert>
+	
+	<select id="selectAll" resultType="com.baobab.m.vo.MainCpListVO">
+		select * from mainCpList order by selectDate desc
+	</select>
+	<select id="selectOneCp" parameterType="int" resultType="com.baobab.m.vo.MainCpListVO">
+		select * from mainCpList where cpSeq = #{cpSeq}
+	</select>
+	
+	<delete id="deleteCp" parameterType="int">
+		delete from mainCpList where seqNum = #{seqNum}
+	</delete>
+	<update id="updateCp" parameterType="com.baobab.m.vo.MainCpListVO">
+		update mainCpList set listDiv = #{listDiv}, menuSeq = #{menuSeq}, imgUrl = #{imgUrl} where seqNum = #{seqNum}
+	</update>
+	
+	<select id="getForUsers" parameterType="com.baobab.m.vo.MainListSearchVO" resultType="com.baobab.m.vo.MainCpListVO">
+		select mcl.*, (6371*acos(cos(radians(#{latitude}))*cos(radians(latitude))*cos(radians(longitude)-radians(#{longitude}))+sin(radians(#{latitude}))*sin(radians(latitude)))) as distance from mainCpList as mcl join cp_info as ci on mcl.cpSeq = ci.seq_num order by distance
+	</select>
+	<select id="getInfo" parameterType="com.baobab.m.vo.MainListSearchVO" resultType="com.baobab.m.vo.CPInfoVO">
+		select *,(6371*acos(cos(radians(#{latitude}))*cos(radians(latitude))*cos(radians(longitude)-radians(#{longitude}))+sin(radians(#{latitude}))*sin(radians(latitude)))) as distance, (select img_url from cp_img where cp_seq = cp_info.seq_num order by seq_num limit 1) as img_url, (select updateFlag from cp_img where cp_seq = cp_info.seq_num order by seq_num limit 1) as imgFlag from cp_info where seq_num = #{cpSeq} order by distance
+	</select>
+	<select id="getSalesRate" parameterType="int" resultType="int">
+		select count(*) from payment where cpSeq = #{cpSeq}
+	</select>
+	<select id="getRevRate" parameterType="int" resultType="double">
+		select avg(score) revRate from reviews where cpSeq = #{cpSeq}
+	</select>
+</mapper>

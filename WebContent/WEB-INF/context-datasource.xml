@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:mybatis-spring="http://mybatis.org/schema/mybatis-spring"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.2.xsd
+		http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.2.xsd
+		http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring-1.2.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd">
+
+	<context:component-scan base-package="com.baobab.*.*"></context:component-scan>
+
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+        <property name="driverClass" value="org.mariadb.jdbc.Driver"/>
+        <property name="jdbcUrl" value="jdbc:mariadb://localhost:3306/baobab858?autoReconnect=true"/>
+        <property name="user" value="baobab858"/>
+        <property name="password" value="baobab858!@"/>
+        <property name="idleConnectionTestPeriod" value="60"/>
+        <property name="preferredTestQuery" value="SELECT 1"/>
+        <property name="testConnectionOnCheckin" value="true"/>
+    </bean>
+    
+    <bean id="sqlSession" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource" />
+        <property name="mapperLocations" value="/WEB-INF/sql/*.xml" />
+    </bean>
+     
+    <bean id="sqlSessionTemplate" name="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+        <constructor-arg index="0" ref="sqlSession"/>
+    </bean>
+
+    <bean id="cPJoinMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+    	<property name="sqlSessionFactory" ref="sqlSession"/>
+    	<property name="mapperInterface" value="com.baobab.m.dao.CPJoinMapper"></property>
+    </bean>
+    <bean id="menuUploadMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+    	<property name="sqlSessionFactory" ref="sqlSession"/>
+    	<property name="mapperInterface" value="com.baobab.m.dao.MenuUploadMapper"></property>
+    </bean>
+    <bean id="mainImgUploadMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+    	<property name="sqlSessionFactory" ref="sqlSession"/>
+    	<property name="mapperInterface" value="com.baobab.m.dao.MainImgUploadMapper"></property>
+    </bean>
+    <bean id="loginMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+    	<property name="sqlSessionFactory" ref="sqlSession"/>
+    	<property name="mapperInterface" value="com.baobab.m.dao.LoginMapper"></property>
+    </bean>
+    <bean id="getMyMenuMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+    	<property name="sqlSessionFactory" ref="sqlSession"/>
+    	<property name="mapperInterface" value="com.baobab.m.dao.GetMyMenuMapper"></property>
+    </bean>
+    <bean id="getOurCPMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+    	<property name="sqlSessionFactory" ref="sqlSession"/>
+    	<property name="mapperInterface" value="com.baobab.m.dao.GetOurCPMapper"></property>
+    </bean>
+    <bean id="storeMenuMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+    	<property name="sqlSessionFactory" ref="sqlSession"/>
+    	<property name="mapperInterface" value="com.baobab.m.dao.StoreMenuMapper"></property>
+    </bean>
+    <bean id="callHistoryMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+    	<property name="sqlSessionFactory" ref="sqlSession"/>
+    	<property name="mapperInterface" value="com.baobab.m.dao.CallHistoryMapper"></property>
+    </bean>
+    <bean id="pokeMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+    	<property name="sqlSessionFactory" ref="sqlSession"/>
+    	<property name="mapperInterface" value="com.baobab.m.dao.PokeMapper"></property>
+    </bean>
+    <bean id="visitantMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+    	<property name="sqlSessionFactory" ref="sqlSession"/>
+    	<property name="mapperInterface" value="com.baobab.m.dao.VisitantMapper"></property>
+    </bean>
+    <bean id="versionMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+    	<property name="sqlSessionFactory" ref="sqlSession"/>
+    	<property name="mapperInterface" value="com.baobab.m.dao.VersionMapper"></property>
+    </bean>
+    <bean id="userLocationMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+    	<property name="sqlSessionFactory" ref="sqlSession"/>
+    	<property name="mapperInterface" value="com.baobab.m.dao.UserLocationMapper"></property>
+    </bean>
+	<bean id="userJoinMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+    	<property name="sqlSessionFactory" ref="sqlSession"/>
+    	<property name="mapperInterface" value="com.baobab.m.dao.UserJoinMapper"></property>
+    </bean>
+    <bean id="searchHistoryMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+    	<property name="sqlSessionFactory" ref="sqlSession"/>
+    	<property name="mapperInterface" value="com.baobab.m.dao.SearchHistoryMapper"></property>
+    </bean>
+    <bean id="basketMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+    	<property name="sqlSessionFactory" ref="sqlSession"/>
+    	<property name="mapperInterface" value="com.baobab.m.dao.BasketMapper"></property>
+    </bean>
+    <bean id="paymentMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+    	<property name="sqlSessionFactory" ref="sqlSession"/>
+    	<property name="mapperInterface" value="com.baobab.m.dao.PaymentMapper"></property>
+    </bean>
+    <bean id="statisticsMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+    	<property name="sqlSessionFactory" ref="sqlSession"/>
+    	<property name="mapperInterface" value="com.baobab.m.dao.StatisticsMapper"></property>
+    </bean>
+    <bean id="pushMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+    	<property name="sqlSessionFactory" ref="sqlSession"/>
+    	<property name="mapperInterface" value="com.baobab.m.dao.PushMapper"></property>
+    </bean>
+    <bean id="adminLoginMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+    	<property name="sqlSessionFactory" ref="sqlSession"/>
+    	<property name="mapperInterface" value="com.baobab.admin.dao.AdminLoginMapper"></property>
+    </bean>
+    <bean id="adminMainMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+    	<property name="sqlSessionFactory" ref="sqlSession"/>
+    	<property name="mapperInterface" value="com.baobab.admin.dao.AdminMainMapper"></property>
+    </bean>
+    <bean id="adminUserMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+    	<property name="sqlSessionFactory" ref="sqlSession"/>
+    	<property name="mapperInterface" value="com.baobab.admin.dao.AdminUserMapper"></property>
+    </bean>
+    <bean id="adminUserDetailMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+    	<property name="sqlSessionFactory" ref="sqlSession"/>
+    	<property name="mapperInterface" value="com.baobab.admin.dao.AdminUserDetailMapper"></property>
+    </bean>
+    <bean id="adminCPMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+    	<property name="sqlSessionFactory" ref="sqlSession"/>
+    	<property name="mapperInterface" value="com.baobab.admin.dao.AdminCPMapper"></property>
+    </bean>
+    <bean id="adminCPDetailMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+    	<property name="sqlSessionFactory" ref="sqlSession"/>
+    	<property name="mapperInterface" value="com.baobab.admin.dao.AdminCPDetailMapper"></property>
+    </bean>
+    <bean id="adminNoticeMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+    	<property name="sqlSessionFactory" ref="sqlSession"/>
+    	<property name="mapperInterface" value="com.baobab.admin.dao.AdminNoticeMapper"></property>
+    </bean>
+    <bean id="adminPushMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+    	<property name="sqlSessionFactory" ref="sqlSession"/>
+    	<property name="mapperInterface" value="com.baobab.admin.dao.AdminPushMapper"></property>
+    </bean>
+    <bean id="adminCodeChangeMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+    	<property name="sqlSessionFactory" ref="sqlSession"/>
+    	<property name="mapperInterface" value="com.baobab.admin.dao.AdminCodeChangeMapper"></property>
+    </bean>
+    <bean id="adminCpPushMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+    	<property name="sqlSessionFactory" ref="sqlSession"/>
+    	<property name="mapperInterface" value="com.baobab.admin.dao.AdminCpPushMapper"></property>
+    </bean>
+    <bean id="adminSearchWordMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+    	<property name="sqlSessionFactory" ref="sqlSession"/>
+    	<property name="mapperInterface" value="com.baobab.admin.dao.AdminSearchWordMapper"></property>
+    </bean>
+    <bean id="almightyMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+    	<property name="sqlSessionFactory" ref="sqlSession"/>
+    	<property name="mapperInterface" value="com.baobab.admin.dao.AlmightyMapper"></property>
+    </bean>
+    <bean id="personalInfoMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+    	<property name="sqlSessionFactory" ref="sqlSession"/>
+    	<property name="mapperInterface" value="com.baobab.m.dao.PersonalInfoMapper"></property>
+    </bean>
+    <bean id="couponUserMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+    	<property name="sqlSessionFactory" ref="sqlSession"/>
+    	<property name="mapperInterface" value="com.baobab.m.dao.CouponUserMapper"></property>
+    </bean>
+    <bean id="couCpMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+    	<property name="sqlSessionFactory" ref="sqlSession"/>
+    	<property name="mapperInterface" value="com.baobab.m.dao.CouCpMapper"></property>
+    </bean>
+    <bean id="couPaymentMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+    	<property name="sqlSessionFactory" ref="sqlSession"/>
+    	<property name="mapperInterface" value="com.baobab.m.dao.CouPaymentMapper"></property>
+    </bean>
+    <bean id="couponListMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+    	<property name="sqlSessionFactory" ref="sqlSession"/>
+    	<property name="mapperInterface" value="com.baobab.m.dao.CouponListMapper"></property>
+    </bean>
+    <bean id="couponHistoryMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+    	<property name="sqlSessionFactory" ref="sqlSession"/>
+    	<property name="mapperInterface" value="com.baobab.m.dao.CouponHistroyMapper"></property>
+    </bean>
+    <bean id="adminCouponListMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+    	<property name="sqlSessionFactory" ref="sqlSession"/>
+    	<property name="mapperInterface" value="com.baobab.admin.dao.AdminCouponListMapper"></property>
+    </bean>
+    <bean id="cpStaffMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+    	<property name="sqlSessionFactory" ref="sqlSession"/>
+    	<property name="mapperInterface" value="com.baobab.m.dao.CpStaffMapper"></property>
+    </bean>
+    <bean id="cpStaffTest" class="org.mybatis.spring.mapper.MapperFactoryBean">
+    	<property name="sqlSessionFactory" ref="sqlSession"/>
+    	<property name="mapperInterface" value="com.baobab.m.dao.CpStaffTest"></property>
+    </bean>
+    <bean id="marketHistoryMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+    	<property name="sqlSessionFactory" ref="sqlSession"/>
+    	<property name="mapperInterface" value="com.baobab.m.dao.MarketHistoryMapper"></property>
+    </bean>
+    <bean id="qRCodeMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+    	<property name="sqlSessionFactory" ref="sqlSession"/>
+    	<property name="mapperInterface" value="com.baobab.m.dao.QRCodeMapper"></property>
+    </bean>
+    <bean id="couRecommendMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+    	<property name="sqlSessionFactory" ref="sqlSession"/>
+    	<property name="mapperInterface" value="com.baobab.m.dao.CouRecommendMapper"></property>
+    </bean>
+    <bean id="adImagesMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+    	<property name="sqlSessionFactory" ref="sqlSession"/>
+    	<property name="mapperInterface" value="com.baobab.m.dao.AdImagesMapper"></property>
+    </bean>
+    <bean id="eventMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+    	<property name="sqlSessionFactory" ref="sqlSession"/>
+    	<property name="mapperInterface" value="com.baobab.m.dao.EventMapper"></property>
+    </bean>
+    <bean id="hitsMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+    	<property name="sqlSessionFactory" ref="sqlSession"/>
+    	<property name="mapperInterface" value="com.baobab.m.dao.HitsMapper"></property>
+    </bean>
+    <bean id="reviewsMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+    	<property name="sqlSessionFactory" ref="sqlSession"/>
+    	<property name="mapperInterface" value="com.baobab.m.dao.ReviewsMapper"></property>
+    </bean>
+    <bean id="adminMainpageMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+    	<property name="sqlSessionFactory" ref="sqlSession"/>
+    	<property name="mapperInterface" value="com.baobab.admin.dao.AdminMainpageMapper"></property>
+    </bean>
+    <bean id="adminOwnerMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+    	<property name="sqlSessionFactory" ref="sqlSession"/>
+    	<property name="mapperInterface" value="com.baobab.admin.dao.AdminOwnerMapper"></property>
+    </bean>
+    <bean id="adminMainImgMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+    	<property name="sqlSessionFactory" ref="sqlSession"/>
+    	<property name="mapperInterface" value="com.baobab.admin.dao.AdminMainImgMapper"></property>
+    </bean>
+    <bean id="adminPaymentMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+    	<property name="sqlSessionFactory" ref="sqlSession"/>
+    	<property name="mapperInterface" value="com.baobab.admin.dao.AdminPaymentMapper"></property>
+    </bean>
+    <bean id="adminAppMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+    	<property name="sqlSessionFactory" ref="sqlSession"/>
+    	<property name="mapperInterface" value="com.baobab.admin.dao.AdminAppMapper"></property>
+    </bean>
+    <bean id="dailyReportMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+    	<property name="sqlSessionFactory" ref="sqlSession"/>
+    	<property name="mapperInterface" value="com.baobab.admin.dao.DailyReportMapper"></property>
+    </bean>
+    <bean id="adminEventMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+    	<property name="sqlSessionFactory" ref="sqlSession"/>
+    	<property name="mapperInterface" value="com.baobab.admin.dao.AdminEventMapper"></property>
+    </bean>
+    <bean id="adminMeetingMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+    	<property name="sqlSessionFactory" ref="sqlSession"/>
+    	<property name="mapperInterface" value="com.baobab.admin.dao.AdminMeetingMapper"></property>
+    </bean>
+    <bean id="mainListMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+    	<property name="sqlSessionFactory" ref="sqlSession"/>
+    	<property name="mapperInterface" value="com.baobab.m.dao.MainListMapper"></property>
+    </bean>
+</beans>

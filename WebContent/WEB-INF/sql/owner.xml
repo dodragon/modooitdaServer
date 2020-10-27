@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	<mapper namespace="com.baobab.admin.dao.AdminOwnerMapper">
+		<!-- list -->
+		<select id="cpUserListSelect" resultType="com.baobab.m.vo.CPUseVO">
+			select cu.*, ua.phon_num as userPhone, ua.userName from cp_user as cu join user_all as ua on cu.email = ua.email
+		</select>
+		
+		<!-- detail -->
+		<select id="cpUserSelect" parameterType="string" resultType="com.baobab.m.vo.CPUseVO">
+			select cu.*, ci.seq_num as cpSeq from cp_user as cu join cp_info as ci on cu.email = ci.owner_email where cu.email = #{email}
+		</select>
+		<select id="userSelect" parameterType="string" resultType="com.baobab.m.vo.UserAllVO">
+			select * from user_all where email = #{email}
+		</select>
+	</mapper>

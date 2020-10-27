@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	<mapper namespace="com.baobab.m.dao.GetOurCPMapper">
+		<!-- 거리 전체(상단) -->
+		<select id="distanceAll" parameterType="com.baobab.m.vo.PageSearchVO" resultType="com.baobab.m.vo.CPInfoVO">
+			select ci.*, (6371*acos(cos(radians(#{latitude}))*cos(radians(ci.latitude))*cos(radians(ci.longitude)-radians(#{longitude}))+sin(radians(#{latitude}))*sin(radians(ci.latitude)))) as distance, (select img_url from cp_img where cp_seq = ci.seq_num order by seq_num limit 1) as img_url, (select avg(score) revRate from reviews where cpSeq = ci.seq_num) as rev_grade from cp_info as ci join event_cp as ec on ci.seq_num = ec.cpSeq join event_option_cp as eoc on ec.eventSerial = eoc.eventSerial join event_menu_cp as emc on eoc.optionSerial = emc.optionSerial where ci.cpStatus = 'open' and (select count(*) from event_cp where cpSeq = ci.seq_num) != 0 and ci.CP_address regexp #{location} and (ci.CP_name regexp #{searchWord} or ci.CP_address regexp #{searchWord} or ci.CP_intro regexp #{searchWord} or ci.CP_kind regexp #{searchWord} or ci.CP_type regexp #{searchWord} or ci.CP_Theme1 regexp #{searchWord} or ci.CP_Theme2 regexp #{searchWord} or ec.eventName regexp #{searchWord} or eoc.optionName regexp #{searchWord} or emc.menuName regexp #{searchWord}) and cp_div regexp #{div} group by ci.seq_num order by distance limit #{topPageInt}, 10
+		</select>
+		<!-- 거리 안심(상단) -->
+		<select id="distanceSafe" parameterType="com.baobab.m.vo.PageSearchVO" resultType="com.baobab.m.vo.CPInfoVO">
+			select ci.*, (6371*acos(cos(radians(#{latitude}))*cos(radians(ci.latitude))*cos(radians(ci.longitude)-radians(#{longitude}))+sin(radians(#{latitude}))*sin(radians(ci.latitude)))) as distance, (select img_url from cp_img where cp_seq = ci.seq_num order by seq_num limit 1) as img_url, (select avg(score) revRate from reviews where cpSeq = ci.seq_num) as rev_grade from cp_info as ci join event_cp as ec on ci.seq_num = ec.cpSeq join event_option_cp as eoc on ec.eventSerial = eoc.eventSerial join event_menu_cp as emc on eoc.optionSerial = emc.optionSerial where ci.cpStatus = 'open' and (select count(*) from event_cp where cpSeq = ci.seq_num) != 0 and ci.CP_address regexp #{location} and (ci.CP_name regexp #{searchWord} or ci.CP_address regexp #{searchWord} or ci.CP_intro regexp #{searchWord} or ci.CP_kind regexp #{searchWord} or ci.CP_type regexp #{searchWord} or ci.CP_Theme1 regexp #{searchWord} or ci.CP_Theme2 regexp #{searchWord} or ec.eventName regexp #{searchWord} or eoc.optionName regexp #{searchWord} or emc.menuName regexp #{searchWord}) and cp_div regexp #{div} and (CP_Theme1 regexp '안심' or CP_Theme2 regexp '안심') group by ci.seq_num order by distance limit #{topPageInt}, 10
+		</select>
+		<!-- 인기 전체(상단) -->
+		<select id="populateAll" parameterType="com.baobab.m.vo.PageSearchVO" resultType="com.baobab.m.vo.CPInfoVO">
+			select ci.*, (6371*acos(cos(radians(#{latitude}))*cos(radians(ci.latitude))*cos(radians(ci.longitude)-radians(#{longitude}))+sin(radians(#{latitude}))*sin(radians(ci.latitude)))) as distance, (select img_url from cp_img where cp_seq = ci.seq_num order by seq_num limit 1) as img_url, (select avg(score) revRate from reviews where cpSeq = ci.seq_num) as rev_grade from cp_info as ci join event_cp as ec on ci.seq_num = ec.cpSeq join event_option_cp as eoc on ec.eventSerial = eoc.eventSerial join event_menu_cp as emc on eoc.optionSerial = emc.optionSerial where ci.cpStatus = 'open' and (select count(*) from event_cp where cpSeq = ci.seq_num) != 0 and ci.CP_address regexp #{location} and (ci.CP_name regexp #{searchWord} or ci.CP_address regexp #{searchWord} or ci.CP_intro regexp #{searchWord} or ci.CP_kind regexp #{searchWord} or ci.CP_type regexp #{searchWord} or ci.CP_Theme1 regexp #{searchWord} or ci.CP_Theme2 regexp #{searchWord} or ec.eventName regexp #{searchWord} or eoc.optionName regexp #{searchWord} or emc.menuName regexp #{searchWord}) and cp_div regexp #{div} group by ci.seq_num order by ((select count(*) from payment where cpSeq = ci.seq_num) + (select count(*) from reviews where cpSeq = ci.seq_num) + (select avg(score) from reviews where cpSeq = ci.seq_num)) limit #{topPageInt}, 10
+		</select>
+		<!-- 인기 안심(상단) -->
+		<select id="populateSafe" parameterType="com.baobab.m.vo.PageSearchVO" resultType="com.baobab.m.vo.CPInfoVO">
+			select ci.*, (6371*acos(cos(radians(#{latitude}))*cos(radians(ci.latitude))*cos(radians(ci.longitude)-radians(#{longitude}))+sin(radians(#{latitude}))*sin(radians(ci.latitude)))) as distance, (select img_url from cp_img where cp_seq = ci.seq_num order by seq_num limit 1) as img_url, (select avg(score) revRate from reviews where cpSeq = ci.seq_num) as rev_grade from cp_info as ci join event_cp as ec on ci.seq_num = ec.cpSeq join event_option_cp as eoc on ec.eventSerial = eoc.eventSerial join event_menu_cp as emc on eoc.optionSerial = emc.optionSerial where ci.cpStatus = 'open' and (select count(*) from event_cp where cpSeq = ci.seq_num) != 0 and ci.CP_address regexp #{location} and (ci.CP_name regexp #{searchWord} or ci.CP_address regexp #{searchWord} or ci.CP_intro regexp #{searchWord} or ci.CP_kind regexp #{searchWord} or ci.CP_type regexp #{searchWord} or ci.CP_Theme1 regexp #{searchWord} or ci.CP_Theme2 regexp #{searchWord} or ec.eventName regexp #{searchWord} or eoc.optionName regexp #{searchWord} or emc.menuName regexp #{searchWord}) and cp_div regexp #{div} and CP_Theme1 regexp '안심' group by ci.seq_num order by ((select count(*) from payment where cpSeq = ci.seq_num) + (select count(*) from reviews where cpSeq = ci.seq_num) + (select avg(score) from reviews where cpSeq = ci.seq_num)) limit #{topPageInt}, 10
+		</select>
+		
+		<!-- 거리+인기 전체(하단) -->
+		<select id="bottomAll" parameterType="com.baobab.m.vo.PageSearchVO" resultType="com.baobab.m.vo.PageBottomListVO">
+			(select seq_num as cpSeq, CP_name as cpName, (6371*acos(cos(radians(#{latitude}))*cos(radians(latitude))*cos(radians(longitude)-radians(#{longitude}))+sin(radians(#{latitude}))*sin(radians(latitude)))) as distance, '비안심' as safeDiv from cp_info  where (select count(*) from event_cp where cpSeq = seq_num) = 0 and CP_address regexp #{location} and (CP_name regexp #{searchWord} or CP_address regexp #{searchWord} or CP_intro regexp #{searchWord} or CP_kind regexp #{searchWord} or CP_type regexp #{searchWord} or CP_Theme1 regexp #{searchWord} or CP_Theme2 regexp #{searchWord}) and cp_div regexp #{div}) union (select safeNo as cpSeq, cpName, (6371*acos(cos(radians(#{latitude}))*cos(radians(latitude))*cos(radians(longitude)-radians(#{longitude}))+sin(radians(#{latitude}))*sin(radians(latitude)))) as distance, '안심' as safeDiv from safetyNonCp where addr regexp #{location} and (cpName regexp #{searchWord} or addr regexp #{searchWord} or kind regexp #{searchWord} or type regexp #{searchWord}) and cpName regexp #{div}) order by distance limit #{botPageInt}, 5
+		</select>
+		<!-- 거리+인기 안심(하단) -->
+		<select id="bottomSafe" parameterType="com.baobab.m.vo.PageSearchVO" resultType="com.baobab.m.vo.PageBottomListVO">
+			select safeNo as cpSeq, cpName, (6371*acos(cos(radians(#{latitude}))*cos(radians(latitude))*cos(radians(longitude)-radians(#{longitude}))+sin(radians(#{latitude}))*sin(radians(latitude)))) as distance, '안심' as safeDiv from safetyNonCp where addr regexp #{location} and (cpName regexp #{searchWord} or addr regexp #{searchWord} or kind regexp #{searchWord} or type regexp #{searchWord} and cpName regexp #{div}) order by distance limit #{botPageInt}, 5
+		</select>
+		<!-- 거리 특가(하단) -->
+		<select id="bottomPD" parameterType="com.baobab.m.vo.PageSearchVO" resultType="com.baobab.m.vo.PageBottomListVO">
+			select seq_num as cpSeq, CP_name as cpName, (6371*acos(cos(radians(#{latitude}))*cos(radians(latitude))*cos(radians(longitude)-radians(#{longitude}))+sin(radians(#{latitude}))*sin(radians(latitude)))) as distance, '비안심' as safeDiv from cp_info as ci where (select count(*) from event_cp where cpSeq = seq_num) = 0 and CP_address regexp #{location} and (CP_name regexp #{searchWord} or CP_address regexp #{searchWord} or CP_intro regexp #{searchWord} or CP_kind regexp #{searchWord} or CP_type regexp #{searchWord} or CP_Theme1 regexp #{searchWord} or CP_Theme2 regexp #{searchWord}) and cp_div regexp #{div} order by distance limit #{botPageInt}, 5
+		</select>
+		<!-- 인기 특가(하단) -->
+		<select id="bottomPP" parameterType="com.baobab.m.vo.PageSearchVO" resultType="com.baobab.m.vo.PageBottomListVO">
+			select seq_num as cpSeq, CP_name as cpName, (6371*acos(cos(radians(#{latitude}))*cos(radians(latitude))*cos(radians(longitude)-radians(#{longitude}))+sin(radians(#{latitude}))*sin(radians(latitude)))) as distance, '비안심' as safeDiv from cp_info as ci where (select count(*) from event_cp where cpSeq = seq_num) = 0 and CP_address regexp #{location} and (CP_name regexp #{searchWord} or CP_address regexp #{searchWord} or CP_intro regexp #{searchWord} or CP_kind regexp #{searchWord} or CP_type regexp #{searchWord} or CP_Theme1 regexp #{searchWord} or CP_Theme2 regexp #{searchWord}) and cp_div regexp #{div} order by ((select count(*) from payment where cpSeq = ci.seq_num) + (select count(*) from reviews where cpSeq = ci.seq_num) + (select avg(score) from reviews where cpSeq = ci.seq_num)) limit #{botPageInt}, 5
+		</select>
+		
+		<!-- 디테일 -->
+		<select id="bottomSafeDetail" parameterType="int" resultType="com.baobab.m.vo.SafeCpVO">
+			select * from safetyNonCp where safeNo = #{safeNo} limit 1
+		</select>
+		<select id="bottomCpDetail" parameterType="int" resultType="com.baobab.m.vo.CPInfoVO">
+			select * from cp_info where seq_num = #{seq}
+		</select>
+		
+		<select id="selectMainEvent" parameterType="int" resultType="com.baobab.m.vo.EventCpMenuVO">
+			select * from event_menu_cp where seqNum = (select mainEvent from cp_info where seq_num = #{cpSeq})
+		</select>
+		<select id="selectEventOne" parameterType="int" resultType="com.baobab.m.vo.EventCpMenuVO">
+			select emc.* from event_menu_cp as emc join event_option_cp as eoc on emc.optionSerial = eoc.optionSerial join event_cp as ec on eoc.eventSerial = ec.eventSerial where ec.cpSeq = #{cpSeq} and ec.eventStatus = 'open' limit 1
+		</select>
+		<select id="selectAllCp" resultType="com.baobab.m.vo.CPInfoVO">
+			select * from cp_info
+		</select>
+		
+		<select id="selectAddrGroup" resultType="string">
+			select substring_index(CP_address, ' ', 3) as addr from cp_info group by addr
+		</select>
+	</mapper>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	<mapper namespace="com.baobab.m.dao.MenuUploadMapper">
+		<insert id="menuUp" parameterType="com.baobab.m.vo.MenuVO">
+			insert into menu (menu_name, cp_name, menu_img, menu_price, menu_option, menu_div, menu_intro, cp_seq) values (#{menu_name}, #{cp_name}, #{menu_img}, #{menu_price}, #{menu_option}, #{menu_div}, #{menu_intro}, #{cp_seq})
+		</insert>
+		<delete id="menuDel" parameterType="com.baobab.m.vo.MenuVO">
+			delete from menu where cp_name = #{cp_name} and menu_name = #{menu_name} and menu_option = #{menu_option}
+		</delete>
+		<update id="menuModi" parameterType="com.baobab.m.vo.MenuVO">
+			update menu set menu_name = #{menu_name}, menu_option = #{menu_option}, menu_price = #{menu_price}, menu_img = #{menu_img} where seq_num = #{seq_num}
+		</update>
+		
+		<select id="ifImgdel" parameterType="com.baobab.m.vo.MenuVO" resultType="int">
+			select count(*) from menu where cp_name = #{cp_name} and menu_name = #{menu_name}
+		</select>
+	</mapper>

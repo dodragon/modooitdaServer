@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	<mapper namespace="com.baobab.m.dao.HitsMapper">
+		<insert id="newHits" parameterType="com.baobab.m.vo.HitsVO">
+			insert into cp_hits (userInfo, cpName, cpSeq, hitDate, hitDiv) values (#{userInfo}, #{cpName}, #{cpSeq}, sysdate(), #{hitDiv})
+		</insert>
+		
+		<select id="todaySelect" parameterType="int" resultType="com.baobab.m.vo.HitsVO">
+			select * from cp_hits where cpSeq = #{cpSeq} and hitDate > CURRENT_DATE()
+		</select>
+		<select id="yesterdaySelect" parameterType="int" resultType="com.baobab.m.vo.HitsVO">
+			select * from cp_hits where cpSeq = #{cpSeq} and hitDate > CURRENT_DATE() - interval 1 day
+		</select>
+		<select id="allSelect" parameterType="int" resultType="com.baobab.m.vo.HitsVO">
+			select * from cp_hits where cpSeq = #{cpSeq} 
+		</select>
+	</mapper>

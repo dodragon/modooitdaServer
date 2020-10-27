@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baobab.m.dao.CouponHistoryMapper">
+	<select id="couponDayHistory" parameterType="com.baobab.m.vo.CouponHistoryDetailVO" resultType="com.baobab.m.vo.CouponHistoryVO">
+		select * from coupon_history where cp_seq = (select seq_num from cp_info where owner_email = #{email}) and cur_date between date(#{startDate}) and date(#{endDate}) + 1 order by cur_date desc	
+	</select>
+	<select id="couponMonthHistory" parameterType="com.baobab.m.vo.CouponHistoryDetailVO" resultType="com.baobab.m.vo.CouponHistoryVO">
+		select * from coupon_history where cp_seq = (select seq_num from cp_info where owner_email = #{email}) and date_format(cur_date, '%Y-%m') = #{month}
+	</select>
+	<select id="couponHomeHistory" parameterType="com.baobab.m.vo.CouponHistoryDetailVO" resultType="com.baobab.m.vo.CouponHistoryVO">
+		select * from coupon_history where cp_seq = (select seq_num from cp_info where owner_email = #{email})
+	</select>
+</mapper>

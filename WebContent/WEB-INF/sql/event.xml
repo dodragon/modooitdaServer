@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baobab.m.dao.EventMapper">
+	<select id="eventInfo" parameterType="int" resultType="com.baobab.m.vo.EventCpVO">
+		select * from event_cp where cpSeq = #{cpSeq} order by turnNum
+	</select>
+	<select id="eventCpSelect" parameterType="int" resultType="com.baobab.m.vo.EventCpVO">
+		select * from event_cp where cpSeq = #{cpSeq} and eventStatus = 'open' order by turnNum
+	</select>
+	<select id="optionSelect" parameterType="int" resultType="com.baobab.m.vo.EventCpOptionVO">
+		select * from event_option_cp where eventSeq = #{eventSeq}
+	</select>
+	<select id="menuSelect" parameterType="int" resultType="com.baobab.m.vo.EventCpMenuVO">
+		select * from event_menu_cp where optionSeq = #{optionSeq}
+	</select>
+	
+	<insert id="eventInsert" parameterType="com.baobab.m.vo.EventCpVO">
+		insert into event_cp (eventName, cpSeq, eventSerial) values (#{eventName}, #{cpSeq}, #{eventSerial})
+	</insert>
+	<insert id="optionInsert" parameterType="com.baobab.m.vo.EventCpOptionVO">
+		insert into event_option_cp (optionName, eventSeq, eventSerial, optionSerial) values (#{optionName}, (select seqNum from event_cp where eventSerial = #{eventSerial}), #{eventSerial}, #{optionSerial})
+	</insert>
+	<insert id="menuInsert" parameterType="com.baobab.m.vo.EventCpMenuVO">
+		insert into event_menu_cp (menuName, optionSeq, price, disPrice, percentAge, optionSerial, menuInfo) values (#{menuName}, (select seqNum from event_option_cp where optionSerial = #{optionSerial}), #{price}, #{disPrice}, #{percentAge}, #{optionSerial}, #{menuInfo})
+	</insert>
+	
+	<select id="optionSelFromEv" parameterType="string" resultType="com.baobab.m.vo.EventCpOptionVO">
+		select * from event_option_cp where eventSerial = #{eventSerial}
+	</select>
+	<delete id="menuDelete" parameterType="string">
+		delete from event_menu_cp where optionSerial = #{optionSerial}
+	</delete>
+	<delete id="optionDelete" parameterType="string">
+		delete from event_option_cp where eventSerial = #{eventSerial}
+	</delete>
+	<update id="eventUpdate" parameterType="com.baobab.m.vo.EventCpVO">
+		update event_cp set eventName = #{eventName} where eventSerial = #{eventSerial}
+	</update>
+	
+	<delete id="eventDelete" parameterType="string">
+		delete from event_cp where eventSerial = #{eventSerial}
+	</delete>
+	
+	<update id="turnNumSetting" parameterType="com.baobab.m.vo.EventCpVO">
+		update event_cp set turnNum = (select * from (select count(*) from event_cp as ec where ec.cpSeq = #{cpSeq}) as tmp) where eventSerial = #{eventSerial}
+	</update>
+	<update id="turnUpdate" parameterType="com.baobab.m.vo.EventCpVO">
+		update event_cp set turnNum = #{turnNum} where eventSerial = #{eventSerial}
+	</update>
+	
+	<select id="optionNameSelect" parameterType="string" resultType="string">
+		select optionName from event_option_cp where optionSerial = #{optionSerial}
+	</select>
+	
+	<update id="menuRateUp" parameterType="int">
+		update event_menu_cp set salesRate = salesRate + 1 where seqNum = #{seqNum}
+	</update>
+	<update id="optionRateUp" parameterType="string">
+		update event_option_cp set salesRate = salesRate + 1 where optionSerial = #{optionSerial}
+	</update>
+	<update id="eventRateUp" parameterType="string">
+		update event_cp set salesRate = salesRate + 1 where eventSerial = (select eventSerial from event_option_cp where optionSerial = #{optionSerial} order by seqNum limit 1)
+	</update>
+	
+	<update id="changeMain" parameterType="com.baobab.m.vo.CPInfoVO">
+		update cp_info set mainEvent = #{mainEvent} where seq_num = #{seq_num}
+	</update>
+	<select id="getMain" parameterType="int" resultType="int">
+		select mainEvent from cp_info where seq_num = #{cpSeq}
+	</select>
+	
+	<insert id="salesHistoryInsert" parameterType="com.baobab.m.vo.SalesHistoryVO">
+		insert into salesHistory (cpSeq, salesPrice, menuName, optionName, optionSerial, eventName, eventSerial, salesStatus, ea, curDate, orderNum) values (#{cpSeq}, #{salesPrice}, #{menuName}, (select optionName from event_option_cp where optionSerial = #{optionSerial}), #{optionSerial}, (select eventName from event_cp where eventSerial = (select eventSerial from event_option_cp where optionSerial = #{optionSerial})), (select eventSerial from event_cp where eventSerial = (select eventSerial from event_option_cp where optionSerial = #{optionSerial})), #{salesStatus}, #{ea}, sysdate(), #{orderNum})
+	</insert>
+	<update id="updateSales" parameterType="com.baobab.m.vo.SalesHistoryVO">
+		update salesHistory set salesStatus = #{salesStatus}, curDate = sysdate() where orderNum = #{orderNum}
+	</update>
+	<select id="selectSalesList" parameterType="com.baobab.m.vo.SalesHistoryVO" resultType="com.baobab.m.vo.SalesHistoryVO">
+		<![CDATA[select * from salesHistory where cpSeq = #{cpSeq} and curDate > STR_TO_DATE(#{menuName}, '%Y-%m-%d') and curDate <= STR_TO_DATE(#{optionName}, '%Y-%m-%d')]]>
+	</select>
+	
+	<update id="setOnOff" parameterType="com.baobab.m.vo.EventCpVO">
+		update event_cp set eventStatus = #{eventStatus} where eventSerial = #{eventSerial}
+	</update>
+	<select id="checkedMain" parameterType="com.baobab.m.vo.EventCpVO" resultType="com.baobab.m.vo.EventCpMenuVO">
+		select * from event_menu_cp where optionSerial = (select optionSerial from event_option_cp where eventSerial = #{eventSerial} limit 1) and seqNum = #{seqNum}
+	</select>
+</mapper>

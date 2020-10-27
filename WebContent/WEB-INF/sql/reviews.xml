@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	<mapper namespace="com.baobab.m.dao.ReviewsMapper">
+		<insert id="reviewInsert" parameterType="com.baobab.m.vo.ReviewsVO">
+			insert into reviews (revCode, userEmail, nickName, score, content, cpSeq, orderNum, insertDate) values (#{revCode}, #{userEmail}, #{nickName}, #{score}, #{content}, #{cpSeq}, #{orderNum}, sysdate())
+		</insert>
+		<insert id="reviewImgInsert" parameterType="com.baobab.m.vo.ReviewImgVO">
+			insert into reviewImgs (revCode, imgUrl) values (#{revCode}, #{imgUrl})
+		</insert>
+		<update id="changeFlag" parameterType="string">
+			update payment set revFlag = 1 where orderNum = #{orderNum}
+		</update>
+		
+		<update id="cpRevInfoUpdate" parameterType="int">
+			update cp_info set CP_rev_grade = (select round(avg(score), 1) from reviews where cpSeq = #{cpSeq}), CP_rev_num = (select count(*) from reviews where cpSeq = #{cpSeq}) where seq_num = #{cpSeq} 
+		</update>
+		
+		<!-- menuActivity -->
+		<select id="menuActSelectRev" parameterType="int" resultType="com.baobab.m.vo.ReviewsSelectVO">
+			select rev.*, ua.profileImg from reviews as rev join user_all as ua on rev.userEmail = ua.email where rev.cpSeq = #{cpSeq} order by insertDate desc
+		</select>
+		<select id="getPaymenus" parameterType="string" resultType="string">
+			select menuName from paymenus where orderNum = #{orderNum}
+		</select>
+		<select id="getReviewImgs" parameterType="string" resultType="string">
+			select imgUrl from reviewImgs where revCode = #{revCode}
+		</select>
+	</mapper>

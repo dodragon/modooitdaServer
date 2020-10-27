@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	<mapper namespace="com.baobab.m.dao.UserTicketMapper">
+		<!-- 티켓 생성 -->
+		<insert id="ticketInsert" parameterType="com.baobab.m.vo.UserTicketVO">
+			insert into user_ticket (ticketTitle, email, orderNum, ticketSerial, cpSeq, cpName, amount, payDate, periodDate) values (#{ticketTitle}, #{email}, #{orderNum}, #{ticketSerial}, #{cpSeq}, #{cpName}, #{amount}, sysdate(), DATE_ADD(sysdate(), INTERVAL 90 DAY))
+		</insert>
+		<insert id="ticketHistoryInsert" parameterType="com.baobab.m.vo.UserTicketHistoryVO">
+			insert into user_ticket_history (ticketTitle, email, cpSeq, orderNum, ticketSerial, amount, curDate, ticketStatus) values (#{ticketTitle}, #{email}, #{cpSeq}, #{orderNum}, #{ticketSerial}, #{amount}, sysdate(), #{ticketStatus})
+		</insert>
+		<!-- 티켓 select -->
+		<select id="selectUserTicket" parameterType="string" resultType="com.baobab.m.vo.UserTicketVO">
+			select ut.*, (select img_url from cp_img where cp_seq = ut.cpSeq order by seq_num limit 1) as imgUrl from user_ticket as ut where email = #{email} order by seqNum desc
+		</select>
+		<select id="getPaidMenus" parameterType="string" resultType="com.baobab.m.vo.PayMenusVO">
+			select * from paymenus where orderNum = #{orderNum}
+		</select>
+		<!-- 티켓 사용 -->
+		<update id="paymentUsed" parameterType="string">
+			update payment set used = '사용' where orderNum = (select orderNum from user_ticket where ticketSerial = #{serial})
+		</update>
+		<delete id="ticketDelete" parameterType="string">
+			delete from user_ticket where ticketSerial = #{serial}
+		</delete>
+		<!-- 티켓 확인 -->
+		<select id="ticketUsedConfirm" parameterType="string" resultType="int">
+			select count(*) from user_ticket_history where (ticketStatus = '사용' or ticketStatus = '취소') and ticketSerial = #{serial}
+		</select>
+		<select id="ticketScanConfirm" parameterType="string" resultType="com.baobab.m.vo.UserTicketVO">
+			select * from user_ticket where ticketSerial = #{serial}
+		</select>
+		<select id="getCpSeq" parameterType="string" resultType="int">
+			select cpSeq from cpStaff where email = #{email}
+		</select>
+		<!-- 티켓 사용 시 푸시 리스트 -->
+		<select id="userPush" parameterType="string" resultType="com.baobab.m.vo.UserLocationVO">
+			select * from user_location where user = (select phon_num from user_all where email = (select email from user_ticket_history where ticketSerial = #{serial} limit 1))
+		</select>
+		<select id="localUserPush" parameterType="string" resultType="com.baobab.m.vo.UserLocationVO">
+			select * from user_location where user = #{phone}
+		</select>
+		<select id="cpPush" parameterType="string" resultType="com.baobab.m.vo.UserLocationVO">
+			select * from user_location where user = (select phon_num from user_all where email = (select owner_email from cp_info where seq_num = (select cpSeq from user_ticket_history where ticketSerial = #{serial} limit 1) limit 1))
+		</select>
+		<select id="cpPushSelect" parameterType="string" resultType="com.baobab.m.vo.UserLocationVO">
+			select * from user_location where user = (select phon_num from user_all where email = #{email})
+		</select>
+		<!-- 티켓 결제 취소 시 -->
+		<delete id="ticketCancel" parameterType="string">
+			delete from user_ticket where orderNum = #{orderNum}
+		</delete>
+		<insert id="ticketCancelHistory" parameterType="string">
+			insert into user_ticket_history (ticketTitle, email, cpSeq, orderNum, ticketSerial, amount, curDate, ticketStatus) values ((select ticketTitle from user_ticket_history as uth where orderNum = #{orderNum limit 1}), (select email from user_ticket_history as uth where orderNum = #{orderNum limit 1}), (select cpSeq from user_ticket_history as uth where orderNum = #{orderNum limit 1}), #{orderNum}, (select ticketSerial from user_ticket_history as uth where orderNum = #{orderNum limit 1}), (select amount from user_ticket_history as uth where orderNum = #{orderNum limit 1}), sysdate(), '취소')
+		</insert>
+		<!-- 사용 티켓 확인 -->
+		<select id="useTicketHistory" parameterType="string" resultType="com.baobab.m.vo.UserTicketHistoryVO">
+			select uth.*, (select CP_name from cp_info where seq_num = uth.cpSeq) as cpName from user_ticket_history as uth where email = #{email} and ticketStatus = '사용' order by curDate desc
+		</select>
+		<!-- 티켓 시리얼 조회 -->
+		<select id="getSerial" parameterType="string" resultType="string">
+			select ticketSerial from user_ticket_history where orderNum = #{orderNum} limit 1
+		</select>
+		<!-- 업체 비밀번호 확인 -->
+		<select id="passwordCheck" parameterType="com.baobab.m.vo.CPInfoVO" resultType="int">
+			select seq_num from cp_info where cpPassword = #{cpPassword} and seq_num = #{seq_num}
+		</select>
+		<!-- 자유 이용권 내역 저장 -->
+		<insert id="freeTicket" parameterType="com.baobab.m.vo.FreeTicketHistoryVO">
+			insert into freeTicketHistory (email, price, disprice, cpName, cpSeq, payDate) values (#{email}, #{price}, #{disprice}, #{cpName}, #{cpSeq}, sysdate())
+		</insert>
+	</mapper>

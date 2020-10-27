@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	<mapper namespace="com.baobab.admin.dao.AdminPushMapper">
+		<select id="selectList" resultType="com.baobab.m.vo.AdminPushVO">
+			select ap.seq_num, ap.title, ap.message, ap.push_date, (select concat(aa.name, ' ', aa.job_class)) as writer from admin_push as ap join admin_account as aa on ap.writer = aa.id
+		</select>
+		<select id="detail" parameterType="int" resultType="com.baobab.m.vo.AdminPushVO">
+			select ap.title, ap.message, ap.push_date, (select concat(aa.name, ' ', aa.job_class)) as writer, ap.seq_num from admin_push as ap join admin_account as aa on ap.writer = aa.id where ap.seq_num = #{seq}
+		</select>
+		<insert id="insert" parameterType="com.baobab.m.vo.AdminPushVO">
+			insert into admin_push (writer, title, message, push_date) values (#{writer}, #{title}, #{message}, sysdate())
+		</insert>
+		<select id="selectOurUsers" resultType="com.baobab.m.vo.UserLocationVO">
+			select ul.* from user_location as ul join user_all as ua on ul.user = ua.email where ua.push_agree = 'o'
+		</select>
+		<select id="selectVisitUsers" resultType="com.baobab.m.vo.UserLocationVO">
+			select * from user_location where user like 'VU%'
+		</select>
+	</mapper>

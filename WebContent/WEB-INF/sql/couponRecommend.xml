@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baobab.m.dao.CouRecommendMapper">
+	<select id="couponRecommend" parameterType="com.baobab.m.vo.CPInfoVO" resultType="com.baobab.m.vo.CPInfoVO">
+		<![CDATA[select ci.*,(6371*acos(cos(radians((select latitude from cp_info where seq_num = #{seq_num})))*cos(radians(latitude))*cos(radians(longitude)-radians((select longitude from cp_info where seq_num = #{seq_num})))+sin(radians((select latitude from cp_info where seq_num = #{seq_num})))*sin(radians(latitude)))) as distance, (select img_url from cp_img where cp_seq = ci.seq_num order by seq_num limit 1) as img_url from cp_info as ci where ci.seq_num != #{seq_num} and (select count(*) from event_cp where cpSeq = ci.seq_num) > 0 group by ci.seq_num order by distance limit 5]]>
+	</select>
+	<select id="findThisCp" parameterType="int" resultType="com.baobab.m.vo.CPInfoVO">
+		select ci.*, (select img_url from cp_img where cp_seq = ci.seq_num order by seq_num limit 1) as img_url from cp_info as ci where seq_num = #{cpSeq}
+	</select>
+</mapper>

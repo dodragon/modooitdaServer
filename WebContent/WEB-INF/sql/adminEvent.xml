@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	<mapper namespace="com.baobab.admin.dao.AdminEventMapper">
+		<!-- update -->
+		<update id="eventUpdate" parameterType="com.baobab.m.vo.EventCpVO">
+			update event_cp set eventName = #{eventName}, eventStatus = #{eventStatus} where eventSerial = #{eventSerial}
+		</update>
+		<update id="optionUpdate" parameterType="com.baobab.m.vo.EventCpOptionVO">
+			update event_option_cp set optionName = #{optionName}, eventSerial = #{eventSerial}, eventSeq = (select seqNum from event_cp where eventSerial = #{eventSerial}) where optionSerial = #{optionSerial}
+		</update>
+		<update id="menuUpdate" parameterType="com.baobab.m.vo.EventCpMenuVO">
+			update event_menu_cp set menuName = #{menuName}, price = #{price}, disPrice = #{disPrice}, percentAge = #{percentAge}, menuInfo = #{menuInfo}, optionSeq = (select seqNum from event_option_cp where optionSerial = #{optionSerial}), optionSerial = #{optionSerial} where seqNum = #{seqNum}
+		</update>
+		
+		<!-- deleteEvent -->
+		<delete id="deleteEvent" parameterType="string">
+			delete from event_cp where eventSerial = #{eventSerial}
+		</delete>
+		
+		<!-- getOptionSerials -->
+		<select id="getOptionSeirials" parameterType="string" resultType="string">
+			select optionSerial from event_option_cp where eventSerial = #{eventSerial}
+		</select>
+		
+		<!-- deleteOption -->
+		<delete id="deleteOption" parameterType="string">
+			delete from event_option_cp where optionSerial = #{optionSerial}
+		</delete>
+		
+		<!-- deleteMenu -->
+		<delete id="deleteEventMenu" parameterType="string">
+			delete from event_menu_cp where optionSerial = #{optionSerial}
+		</delete>
+		<delete id="deleteOneMenu" parameterType="int">
+			delete from event_menu_cp where seqNum = #{seq};
+		</delete>
+		
+		<!-- check -->
+		<select id="eventMainCheck" parameterType="string" resultType="int">
+			select count(*) from cp_info as ci join (select m.* from event_menu_cp as m join event_option_cp as o on m.optionSerial = o.optionSerial where o.eventSerial = #{serial}) as m on ci.mainEvent = m.seqNum
+		</select>
+		<select id="eventOffCheck" parameterType="string" resultType="int">
+			select count(*) from event_cp where cpSeq = (select cpSeq from event_cp where eventSerial = #{serial}) and eventStatus = 'open' and eventSerial != #{serial}
+		</select>
+		
+		<!-- insert -->
+		<insert id="evnetInsert" parameterType="com.baobab.m.vo.EventCpVO">
+			insert into event_cp (eventName, cpSeq, salesRate, eventSerial, eventStatus, turnNum) values (#{eventName}, #{cpSeq}, 0, #{eventSerial}, 'open', (select count(*) + 1 from event_cp as ec where cpSeq = #{cpSeq}))
+		</insert>
+		<insert id="optionInsert" parameterType="com.baobab.m.vo.EventCpOptionVO">
+			insert into event_option_cp (optionName, eventSeq, salesRate, eventSerial, optionSerial) values (#{optionName}, (select seqNum from event_cp as ec where eventSerial = #{eventSerial}), 0, #{eventSerial}, #{optionSerial})
+		</insert>
+		<insert id="menuInsert" parameterType="com.baobab.m.vo.EventCpMenuVO">
+			insert into event_menu_cp (menuName, optionSeq, price, disPrice, percentAge, salesRate, optionSerial, menuInfo) values (#{menuName}, (select seqNum from event_option_cp as eop where optionSerial = #{optionSerial}), #{price}, #{disPrice}, #{percentAge}, 0, #{optionSerial}, #{menuInfo})
+		</insert>
+	</mapper>

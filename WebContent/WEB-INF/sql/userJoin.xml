@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	<mapper namespace="com.baobab.m.dao.UserJoinMapper">
+		<insert id="userAllJoin" parameterType="com.baobab.m.vo.UserAllVO">
+			insert into user_all (email, user_password, phon_num, phone_corp, div_code, join_date, push_agree, nickName, userName, birth, gender, nation) values (#{email}, #{user_password}, #{phon_num}, #{phone_corp}, #{div_code}, sysdate(), #{push_agree}, #{nickName}, #{userName}, #{birth}, #{gender}, #{nation})
+		</insert>
+		<insert id="userHistoryJoin" parameterType="com.baobab.m.vo.UserHistoryVO">
+			insert into user_history (email, div_code, change_date) values (#{email}, 'u-01-01', sysdate())
+		</insert>
+		<select id="getUserPhone" parameterType="string" resultType="string">
+			select phon_num from user_all where email = #{email}
+		</select>
+		<select id="getCpPhone" parameterType="int" resultType="string">
+			select phon_num from user_all where email = (select email from cp_user where CP_name = (select cp_name from cp_info where seq_num = #{cpSeq}));
+		</select>
+		<update id="userInfoChange" parameterType="com.baobab.m.vo.UserAllVO">
+			update user_all set user_password = #{user_password}, push_agree = #{push_agree} where email = #{email}
+		</update>
+		<update id="leaveUserAll" parameterType="string">
+			update user_all set div_code = 'u-01-02' where email = #{email}
+		</update>
+		<insert id="leaveUserHistory" parameterType="string">
+			insert into user_history (email, div_code, change_date) values (#{email}, 'u-01-02', sysdate())
+		</insert>
+		<update id="userCodeUpdate" parameterType="com.baobab.m.vo.UserAllVO">
+			update user_all set div_code = #{div_code} where email = #{email}
+		</update>
+		<select id="dupEmail" parameterType="string" resultType="com.baobab.m.vo.UserAllVO">
+			select * from user_all where email = #{email}
+		</select>
+		<select id="emailCheck" parameterType="com.baobab.m.vo.UserAllVO" resultType="com.baobab.m.vo.UserAllVO">
+			select * from user_all where email = #{email} and phon_num = #{phon_num}
+		</select>
+		<update id="userPointUp" parameterType="string">
+         	update user_all set point = point + 10 where email = #{email}
+      	</update>
+      	<select id="userNowPoint" parameterType="string" resultType="int">
+      		select point from user_all where email = #{email}
+      	</select>
+      	
+      	<delete id="profileDelete" parameterType="string">
+      		update user_all set profileImg = '이미지없음' where email = #{email}
+      	</delete>
+      	<update id="setProfile" parameterType="com.baobab.m.vo.UserAllVO">
+      		update user_all set nickName = #{nickName}, profileImg = #{profileImg} where email = #{email}
+      	</update>
+      	<select id="nickNameCheck" parameterType="string" resultType="com.baobab.m.vo.UserAllVO">
+      		select * from user_all where nickName = #{nickName}
+      	</select>
+      	<select id="selectProfileImg" parameterType="string" resultType="string">
+      		select profileImg from user_all where email = #{email}
+      	</select>
+      	
+      	<select id="userDataCheck" parameterType="string" resultType="com.baobab.m.vo.UserAllVO">
+      		select * from user_all where email = #{email}
+      	</select>
+      	<update id="userDataAdd" parameterType="com.baobab.m.vo.UserAllVO">
+      		update user_all set userName = #{userName}, phone_corp = #{phone_corp}, birth = #{birth}, gender = #{gender}, nation = #{nation} where email = #{email}
+      	</update>
+	</mapper>

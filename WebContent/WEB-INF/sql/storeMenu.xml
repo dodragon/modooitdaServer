@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	<mapper namespace="com.baobab.m.dao.StoreMenuMapper">
+		<select id="getMenus" parameterType="com.baobab.m.vo.MenuVO" resultType="com.baobab.m.vo.MenuVO">
+			select menu_name, cp_name, min(menu_price) as menu_price, min(menu_dis_price) as menu_dis_price, menu_img, menu_div from menu where cp_seq = #{cp_seq} group by menu_name order by seq_num
+		</select> 
+		<select id="getAllMenus" parameterType="com.baobab.m.vo.MenuVO" resultType="com.baobab.m.vo.MenuVO">
+			select * from menu where cp_seq = #{cp_seq} and menu_name = #{menu_name}
+		</select>
+		<select id="getOneMenu" parameterType="com.baobab.m.vo.MenuVO" resultType="com.baobab.m.vo.MenuVO">
+			select * from menu where cp_name = #{cp_name} and menu_name = #{menu_name} and cp_seq = #{cp_seq} order by menu_price
+		</select>
+	</mapper>

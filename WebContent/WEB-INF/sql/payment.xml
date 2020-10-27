@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	<mapper namespace="com.baobab.m.dao.PaymentMapper">
+		<insert id="paymentInsert" parameterType="com.baobab.m.vo.PaymentVO">
+			insert into payment (email, userPhone, orderNum, cpName, cpSeq, goods, totalPrice, totalDisPrice, payStatus, used, payDate, tid, curDate, pg) values (#{email}, #{userPhone}, #{orderNum}, #{cpName}, #{cpSeq}, #{goods}, #{totalPrice}, #{totalDisPrice}, #{payStatus}, #{used}, sysdate(), #{tid}, sysdate(), #{pg})
+		</insert>
+		<insert id="paymenuInsert" parameterType="com.baobab.m.vo.PayMenusVO">
+			insert into paymenus (orderNum, menuName, menuSeq, optionSerial, cpSeq, payEmail, payDate, price, disPrice, ea) values (#{orderNum}, #{menuName}, #{menuSeq}, #{optionSerial}, #{cpSeq}, #{payEmail}, sysdate(), #{price}, #{disPrice}, #{ea})
+		</insert>
+		
+		<select id="cpLocationInfo" parameterType="int" resultType="com.baobab.m.vo.UserLocationVO">
+			select * from user_location where user = (select owner_email from cp_info where seq_num = #{cpSeq})
+		</select>
+		<select id="userLocationInfo" parameterType="string" resultType="com.baobab.m.vo.UserLocationVO">
+			select * from user_location where user = #{email}
+		</select>
+		
+		<select id="findTid" parameterType="string" resultType="string">
+			select tid from payment where orderNum = #{orderNum}
+		</select>
+		
+		<select id="cancelCheck" parameterType="string" resultType="string">
+			select used from payment where orderNum = #{oid}
+		</select>
+		<update id="changeStatus" parameterType="string">
+			update payment set payStatus = '결제취소', cancelDate = sysdate(), curDate = sysDate() where orderNum = #{orderNum}
+		</update>
+		
+		<select id="userCancelLocationInfo" parameterType="string" resultType="com.baobab.m.vo.UserLocationVO">
+			select * from user_location where user = (select email from user_ticket_history where orderNum = #{orderNum} limit 1)
+		</select>
+		<select id="cpCancelLocationInfo" parameterType="string" resultType="com.baobab.m.vo.UserLocationVO">
+			select * from user_location where user = (select owner_email from cp_info where seq_num = (select cpSeq from user_ticket_history where orderNum = #{orderNum} limit 1))
+		</select>
+		
+		<select id="selectPayment" parameterType="com.baobab.m.vo.PaymentVO" resultType="com.baobab.m.vo.PaymentVO">
+			select * from payment where cpSeq = #{cpSeq} and curDate like #{used} order by curDate desc
+		</select>
+		<select id="selectPaymenus" parameterType="string" resultType="com.baobab.m.vo.PayMenusVO">
+			select * from paymenus where orderNum = #{orderNum}
+		</select>
+		
+		<select id="payDetail" parameterType="string" resultType="com.baobab.m.vo.PaymentVO">
+			select * from payment where orderNum = #{orderNum}
+		</select>
+		
+		<!-- 이하 payple 계좌 간편결제 -->
+		<select id="selectPayerIds" parameterType="string" resultType="string">
+			select payerId from paypleInfo where email = #{email}
+		</select>
+		<select id="isIdCount" parameterType="com.baobab.m.vo.PaypleInfoVO" resultType="int">
+			select count(*) from paypleInfo where email = #{email} and payerId = #{payerId}
+		</select>
+		<insert id="insertPayerId" parameterType="com.baobab.m.vo.PaypleInfoVO">
+			insert into paypleInfo (email, payerId, regDate) values (#{email}, (select tid from payment where orderNum = #{payerId}), sysdate())
+		</insert>
+		<delete id="deletePayerId" parameterType="string">
+			delete from paypleInfo where payerId = #{payerId}
+		</delete>
+		<select id="findPg" parameterType="string" resultType="string">
+			select pg from payment where orderNum = #{orderNum}
+		</select>
+		<select id="selectAllFromOid" parameterType="string" resultType="com.baobab.m.vo.PaymentVO">
+			select * from payment where orderNum = #{orderNum}
+		</select>
+		
+		<insert id="justInsert" parameterType="com.baobab.m.vo.PaypleInfoVO">
+			insert into paypleInfo (email, payerId, regDate) values (#{email}, #{payerId}, sysdate())
+		</insert>
+		
+		<select id="findAdmin" resultType="com.baobab.m.vo.UserLocationVO">
+			select * from user_location as ul join user_all as ua on ul.user = ua.email where ua.div_code like 'a%'
+		</select>
+	</mapper>

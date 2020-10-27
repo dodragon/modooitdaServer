@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	<mapper namespace="com.baobab.admin.dao.AdminMainpageMapper">
+		<select id="getUsers" resultType="int">
+			select count(*) from user_all
+		</select>
+		<select id="getCp" resultType="int">
+			select count(*) from cp_info
+		</select>
+		<select id="getPaid" resultType="int">
+			select count(*) from payment where payStatus = '결제완료'
+		</select>
+		<select id="getVisit" parameterType="string" resultType="int">
+			select count(*) from visitUser where visitDate like #{date}
+		</select>	
+		<select id="getSales" parameterType="string" resultType="int">
+			select COALESCE(sum(totalDisPrice), 0) from payment where payStatus = '결제완료' and payDate like #{month}
+		</select>
+		<select id="ticketHistory" resultType="com.baobab.m.vo.UserTicketHistoryVO">
+			select uth.*, ci.CP_name as cpName from user_ticket_history as uth join cp_info as ci on uth.cpSeq = ci.seq_num order by curDate desc
+		</select>
+	</mapper>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	<mapper namespace="com.baobab.admin.dao.DailyReportMapper">
+		<select id="selectAll" resultType="com.baobab.m.vo.DailyReportVO">
+			select * from dailyReport
+		</select>
+		<select id="selectOne" parameterType="int" resultType="com.baobab.m.vo.DailyReportVO">
+			select * from dailyReport where seqNum = #{seqNum}
+		</select>
+		<insert id="insertReport" parameterType="com.baobab.m.vo.DailyReportVO">
+			insert into dailyReport (name, department, jobClass, attendTime, closeTime, todayJob, tomorrowJob, successJob, unSuccessJob, reportDate, id) values (#{name}, #{department}, #{jobClass}, #{attendTime}, #{closeTime}, #{todayJob}, #{tomorrowJob}, #{successJob}, #{unSuccessJob}, sysdate(), #{id})
+		</insert>
+		<update id="updateReport" parameterType="com.baobab.m.vo.DailyReportVO">
+			update dailyReport set todayJob = #{todayJob}, tomorrowJob = #{tomorrowJob}, successJob = #{successJob}, unSuccessJob = #{unSuccessJob}, updateDate = sysdate() where seqNum = #{seqNum}
+		</update>
+		<select id="divCodeCheck" parameterType="string" resultType="string">
+			select div_code from user_all where email = #{email}
+		</select>
+		<select id="getBeforeJob" parameterType="string" resultType="string">
+			select tomorrowJob from dailyReport where id = #{email} order by reportDate desc limit 1
+		</select>
+	</mapper>

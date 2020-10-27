@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	<mapper namespace="com.baobab.admin.dao.AdminCPDetailMapper">
+		<select id="cpInfo" parameterType="string" resultType="com.baobab.m.vo.CPInfoVO">
+			select * from cp_info where CP_name = #{cpName}
+		</select>
+		<select id="poke" parameterType="string" resultType="com.baobab.m.vo.PokeVO">
+			select * from poke where cp_name = #{cpName} and div_code = 'our'
+		</select>
+		<select id="menu" parameterType="string" resultType="com.baobab.m.vo.MenuVO">
+			select * from menu where CP_name = #{cpName}
+		</select>
+		
+		<!-- delete -->
+		<delete id="delStaff" parameterType="int">
+			delete from cpStaff where cpSeq = #{cpSeq}
+		</delete>
+		<delete id="delHits" parameterType="int">
+			delete from cp_hits where cpSeq = #{cpSeq}
+		</delete>
+		<delete id="delMainImg" parameterType="int">
+			delete from cp_img where cp_seq = #{cpSeq}
+		</delete>
+		<delete id="delInfo" parameterType="int">
+			delete from cp_info where seq_num = #{cpSeq}
+		</delete>
+		<delete id="delCpUser" parameterType="string">
+			delete from cp_user where email = #{email}
+		</delete>
+		<delete id="delMenu" parameterType="int">
+			delete from menu where cp_seq = #{cpSeq}
+		</delete>
+		<update id="upUserCode" parameterType="string">
+			update user_all set div_code = 'u-01-01' where email = #{email}
+		</update>
+		<delete id="delReview" parameterType="int">
+			delete from reviews where cpSeq = #{cpSeq}
+		</delete>
+		<delete id="delReviewImgs" parameterType="string">
+			delete from reivewImgs where revCode = #{revCode}
+		</delete>
+		<select id="selRevCode" parameterType="int" resultType="string">
+			select revCode from reviews where cpSeq = #{cpSeq}
+		</select>
+		<delete id="delEventMenu" parameterType="string">
+			delete from event_menu_cp where optionSerial = #{optionSerial}
+		</delete>
+		<delete id="delEventOption" parameterType="string">
+			delete from event_option_cp where eventSerial = #{eventSerial}
+		</delete>
+		<delete id="delEvent" parameterType="int">
+			delete from event_cp where cpSeq = #{cpSeq}
+		</delete>
+		<select id="selEventSerial" parameterType="int" resultType="string">
+			select eventSerial from event_cp where cpSeq = #{cpSeq}
+		</select>
+		<select id="selOptionSerial" parameterType="string" resultType="string">
+			select optionSerial from event_option_cp where eventSerial = #{eventSerial}
+		</select>
+		<select id="selMainImgUrl" parameterType="int" resultType="string">
+			select img_url from cp_img where cp_seq = #{cpSeq}
+		</select>
+		<select id="selMenuImg" parameterType="int" resultType="string">
+			select menu_img from menu where cp_seq = #{cpSeq} and menu_img != '이미지없음'
+		</select>
+		<select id="selRevImgUrl" parameterType="string" resultType="string">
+			select imgUrl from reviewImgs where revCode = #{revCode}
+		</select>
+		
+		<!-- logo -->
+		<update id="logoUpdate" parameterType="com.baobab.m.vo.CPInfoVO">
+			update cp_info set cpLogo = #{cpLogo} where seq_num = #{seq_num}
+		</update>
+	</mapper>

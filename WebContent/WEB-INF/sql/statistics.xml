@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	<mapper namespace="com.baobab.m.dao.StatisticsMapper">
+		<select id="hitSelect" parameterType="com.baobab.m.vo.HitsVO" resultType="int">
+			select count(*) from cp_hits where cpSeq = #{cpSeq} and hitDate like #{hitDiv}
+		</select>
+		<select id="pokeSelect" parameterType="com.baobab.m.vo.PokeVO" resultType="int">
+			select count(*) from poke where cp_seq = #{cp_seq} and poke_date like #{div_code}
+		</select>
+		<select id="paySuccessSelect" parameterType="com.baobab.m.vo.PaymentVO" resultType="int">
+			select count(*) from payment where cpSeq = #{cpSeq} and payStatus = '결제완료' and payDate like #{used}
+		</select>
+		<select id="scanSelect" parameterType="com.baobab.m.vo.UserTicketHistoryVO" resultType="int">
+			select count(*) from user_ticket_history where cpSeq = #{cpSeq} and ticketStatus = '사용' and curDate like #{ticketStatus}
+		</select>
+		<select id="payCancelSelect" parameterType="com.baobab.m.vo.PaymentVO" resultType="int">
+			select count(*) from payment where cpSeq = #{cpSeq} and payStatus = '결제취소' and payDate like #{used}
+		</select>
+		<select id="pushSelect" parameterType="com.baobab.m.vo.CpPushVO" resultType="int">
+			select count(*) from cp_push where cpSeq = #{cpSeq} and sendDate like #{title}
+		</select>
+		<select id="pushClickSelect" parameterType="com.baobab.m.vo.HitsVO" resultType="int">
+			select count(*) from cp_hits where cpSeq = #{cpSeq} and hitDiv = 'push' and hitDate like #{hitDiv}
+		</select>
+		<select id="allSalesSelect" parameterType="com.baobab.m.vo.PaymentVO" resultType="int">
+			select sum(totalDisPrice) from payment where cpSeq = #{cpSeq} and payDate like #{used}
+		</select>
+		<select id="useSalesSelect" parameterType="com.baobab.m.vo.PaymentVO" resultType="int">
+			select sum(totalDisPrice) from payment where cpSeq = #{cpSeq} and used = '사용' and payDate like #{used}
+		</select>
+		<select id="cancelSalesSelect" parameterType="com.baobab.m.vo.PaymentVO" resultType="int">
+			select sum(totalDisPrice) from payment where cpSeq = #{cpSeq} and payStatus = '결제취소' and payDate like #{used}
+		</select>
+		
+		<!-- 월별 리스트 -->
+		<select id="lineChartHits" parameterType="com.baobab.m.vo.StatChartDataVO" resultType="com.baobab.m.vo.StatChartDataVO">
+			SELECT DATE(hitDate) AS dt, count(*) as value FROM cp_hits where hitDate like #{date} and cpSeq = #{cpSeq} GROUP BY dt;
+		</select>
+		<select id="lineChartPoke" parameterType="com.baobab.m.vo.StatChartDataVO" resultType="com.baobab.m.vo.StatChartDataVO">
+			SELECT DATE(poke_date) AS dt, count(*) as value FROM poke where poke_date like #{date} and cp_seq = #{cpSeq} GROUP BY dt;
+		</select>
+		<select id="lineChartPaySuccess" parameterType="com.baobab.m.vo.StatChartDataVO" resultType="com.baobab.m.vo.StatChartDataVO">
+			SELECT DATE(payDate) AS dt, count(*) as value FROM payment where payDate like #{date} and cpSeq = #{cpSeq} and payStatus = '결제완료' GROUP BY dt;
+		</select>
+		<select id="lineChartScan" parameterType="com.baobab.m.vo.StatChartDataVO" resultType="com.baobab.m.vo.StatChartDataVO">
+			SELECT DATE(curDate) AS dt, count(*) as value FROM user_ticket_history where curDate like #{date} and cpSeq = #{cpSeq} and ticketStatus = '사용' GROUP BY dt;
+		</select>
+		<select id="lineChartPayCancel" parameterType="com.baobab.m.vo.StatChartDataVO" resultType="com.baobab.m.vo.StatChartDataVO">
+			SELECT DATE(payDate) AS dt, count(*) as value FROM payment where payDate like #{date} and cpSeq = #{cpSeq} and payStatus = '결제취소' GROUP BY dt;
+		</select>
+		<select id="lineChartPush" parameterType="com.baobab.m.vo.StatChartDataVO" resultType="com.baobab.m.vo.StatChartDataVO">
+			SELECT DATE(sendDate) AS dt, count(*) as value FROM cp_push where sendDate like #{date} and cpSeq = #{cpSeq} GROUP BY dt;
+		</select>
+		<select id="lineChartPushClick" parameterType="com.baobab.m.vo.StatChartDataVO" resultType="com.baobab.m.vo.StatChartDataVO">
+			SELECT DATE(hitDate) AS dt, count(*) as value FROM cp_hits where hitDate like #{date} and cpSeq = #{cpSeq} and hitDiv = 'push' GROUP BY dt;
+		</select>
+		
+		<!-- 이벤트 디테일 -->
+		<select id="optionInfoSelect" parameterType="com.baobab.m.vo.SalesHistoryVO" resultType="com.baobab.m.vo.SalesHistoryVO">
+			<![CDATA[select optionName, sum(salesPrice) as salesPrice, count(*) as ea, optionSerial from salesHistory where eventSerial = #{eventSerial} and (curDate > STR_TO_DATE(#{eventName}, '%Y-%m-%d') and curDate <= STR_TO_DATE(#{orderNum}, '%Y-%m-%d')) group by optionSerial]]>
+		</select>
+		<select id="menuInfoSelect" parameterType="com.baobab.m.vo.SalesHistoryVO" resultType="com.baobab.m.vo.SalesHistoryVO">
+			<![CDATA[select * from salesHistory where optionSerial = #{optionSerial} and (curDate > STR_TO_DATE(#{eventName}, '%Y-%m-%d') and curDate <= STR_TO_DATE(#{orderNum}, '%Y-%m-%d'))]]>
+		</select>
+	</mapper>

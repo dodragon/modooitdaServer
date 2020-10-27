@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	<mapper namespace="com.baobab.admin.dao.AdminNoticeMapper">
+		<select id="selectNotice" resultType="com.baobab.m.vo.NoticeVO">
+			select noti.seq_num, noti.title, noti.content, noti.read_div, noti.noti_date, (select concat(aa.name, ' ', aa.job_class)) as writer from notice as noti join admin_account as aa on noti.writer = aa.id order by noti_date desc
+		</select>
+		<select id="userSelect" resultType="com.baobab.m.vo.NoticeVO" parameterType="string">
+			select * from notice where read_div = 'all' or read_div = #{div} order by noti_date desc
+		</select>
+		<select id="detail" parameterType="int" resultType="com.baobab.m.vo.NoticeVO">
+			select noti.title, noti.content, noti.noti_date, (select concat(aa.name, ' ', aa.job_class)) as writer, noti.seq_num, noti.read_div from notice as noti join admin_account as aa on noti.writer = aa.id where noti.seq_num = #{seq}
+		</select>
+		<insert id="insertNotice" parameterType="com.baobab.m.vo.NoticeVO">
+			insert into notice (writer, title, content, read_div, noti_date) values (#{writer}, #{title}, #{content}, #{read_div}, sysdate())
+		</insert>
+		<select id="selectUsers" parameterType="string" resultType="com.baobab.m.vo.UserLocationVO">
+			select ul.* from user_location as ul join user_all as ua on ul.user = ua.email where ua.div_code like #{div} and ua.push_agree = 'o'
+		</select>
+	</mapper>

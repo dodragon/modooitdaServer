@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	<mapper namespace="com.baobab.admin.dao.AdminMainImgMapper">
+		<!-- select -->
+		<select id="getImgs" parameterType="int" resultType="com.baobab.m.vo.CPmainImgVO">
+			select * from cp_img where cp_seq = #{cpSeq} order by seq_num
+		</select>
+		<!-- insert -->
+		<insert id="insertImg" parameterType="com.baobab.m.vo.CPmainImgVO">
+			insert into cp_img (cp_name, img_url, cp_seq) values (#{cp_name}, #{img_url}, #{cp_seq})
+		</insert>
+		<!-- delete -->
+		<delete id="deleteImg" parameterType="com.baobab.m.vo.CPmainImgVO">
+			delete from cp_img where cp_seq = #{cp_seq} and img_url = #{img_url}
+		</delete>
+	</mapper>

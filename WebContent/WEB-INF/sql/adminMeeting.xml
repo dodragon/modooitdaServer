@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	<mapper namespace="com.baobab.admin.dao.AdminMeetingMapper">
+		<select id="selectAll" resultType="com.baobab.m.vo.MeetingLogVO">
+			select * from meetLog
+		</select>
+		<select id="selectDetail" parameterType="int" resultType="com.baobab.m.vo.MeetingLogVO">
+			select * from meetLog where seqNum = #{seqNum}
+		</select>
+		<insert id="insert" parameterType="com.baobab.m.vo.MeetingLogVO">
+			insert into meetLog (meetingTitle, mainAgenda, meetingContents, meetingResult, writer, director, nop, attendees, meetingDate, place, startTime, endTime) values (#{meetingTitle}, #{mainAgenda}, #{meetingContents}, #{meetingResult}, #{writer}, #{director}, #{nop}, #{attendees}, #{meetingDate}, #{place}, #{startTime}, #{endTime})
+		</insert>
+		<update id="update" parameterType="com.baobab.m.vo.MeetingLogVO">
+			update meetLog set meetingTitle = #{meetingTitle}, mainAgenda = #{mainAgenda}, meetingContents = #{meetingContents}, meetingResult = #{meetingResult}, writer = #{writer}, director = #{director}, nop = #{nop}, attendees = #{attendees}, meetingDate = #{meetingDate}, place = #{place}, startTime = #{startTime}, endTime = #{endTime} where seqNum = #{seqNum}
+		</update>
+		<select id="selectAdminInfo" resultType="com.baobab.m.vo.AdminAccountVO">
+			select * from admin_account
+		</select>
+	</mapper>

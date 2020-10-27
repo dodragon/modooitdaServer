@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	<mapper namespace="com.baobab.admin.dao.AdminUserMapper">
+		<!-- list -->
+		<select id="selectUser" resultType="com.baobab.m.vo.UserAllVO">
+			select * from user_all
+		</select>
+		
+		<!-- detail -->
+		<select id="defaultInfo" parameterType="string" resultType="com.baobab.m.vo.UserAllVO">
+			select * from user_all where email = #{email}
+		</select>
+		<select id="loctaionInfo" parameterType="string" resultType="string">
+			select addr from user_location where user = #{email}
+		</select>
+		<select id="payInfo" parameterType="string" resultType="com.baobab.m.vo.PaymentVO">
+			select * from payment where email = #{email}
+		</select>
+		<select id="paymenuInfo" parameterType="string" resultType="com.baobab.m.vo.PayMenusVO">
+			select * from paymenus where orderNum = #{orderNum}
+		</select>
+		<select id="ticketInfo" parameterType="string" resultType="com.baobab.m.vo.UserTicketHistoryVO">
+			select *, (select CP_name from cp_info where seq_num = cpSeq) as cpName from user_ticket_history where email = #{email}
+		</select>
+		<select id="revInfo" parameterType="string" resultType="com.baobab.m.vo.ReviewsVO">
+			select rev.*, uth.ticketTitle as usedTicket, (select CP_name from cp_info where seq_num = rev.cpSeq) as cpName from reviews as rev join user_ticket_history as uth on rev.orderNum = uth.orderNum where userEmail = #{email} group by rev.seqNum
+		</select>
+		<select id="pokeInfo" parameterType="string" resultType="com.baobab.m.vo.PokeVO">
+			select * from poke where email = #{email}
+		</select>
+		
+		<!-- adminUser -->
+		<insert id="insertAdmin" parameterType="com.baobab.m.vo.AdminAccountVO">
+			insert into admin_account (id, password, name, job_class, department, join_date) values (#{id}, #{password}, #{name}, #{job_class}, #{department}, sysdate())
+		</insert>
+	</mapper>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	<mapper namespace="com.baobab.m.dao.QRCodeMapper">
+		<select id="searchQRCode" parameterType="string" resultType="com.baobab.m.vo.CPInfoVO">
+			select * from cp_info where CP_name like #{searchWord} or CP_addr_details like #{searchWord} or CP_address like #{searchWord}
+		</select>
+		
+		<update id="updateCpPw" parameterType="com.baobab.m.vo.CPUseVO">
+			update cp_info set cpPassword = #{cpPw} where owner_email = #{email}
+		</update>
+	</mapper>
